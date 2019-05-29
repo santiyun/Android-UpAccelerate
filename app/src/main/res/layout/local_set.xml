@@ -110,6 +110,7 @@
 		android:background="@drawable/textview_bg"
 		android:enabled="false"
 		android:gravity="center_vertical"
+		android:inputType="numberDecimal"
 		android:paddingLeft="12dp"
 		android:textSize="16sp"
 		app:layout_constraintBottom_toBottomOf="@+id/textView4"
@@ -125,6 +126,7 @@
 		android:background="@drawable/textview_bg"
 		android:enabled="false"
 		android:gravity="center_vertical"
+		android:inputType="numberDecimal"
 		android:paddingLeft="12dp"
 		android:textSize="16sp"
 		app:layout_constraintBottom_toBottomOf="@+id/textView5"
@@ -157,8 +159,8 @@
 		android:id="@+id/linearlayout1"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginTop="20dp"
 		android:layout_marginLeft="15dp"
+		android:layout_marginTop="20dp"
 		android:orientation="horizontal"
 		app:layout_constraintLeft_toLeftOf="@+id/textView5"
 		app:layout_constraintTop_toBottomOf="@+id/textView12">
@@ -166,18 +168,18 @@
 		<TextView
 			android:id="@+id/textView13"
 			android:layout_width="60dp"
-			android:gravity="right"
 			android:layout_height="wrap_content"
 			android:layout_centerVertical="true"
+			android:gravity="right"
 			android:text="IP  "/>
 
 		<EditText
 			android:id="@+id/local_frame_ip"
 			android:layout_width="match_parent"
 			android:layout_height="40dp"
+			android:layout_marginRight="24dp"
 			android:layout_toRightOf="@+id/textView13"
 			android:digits="1234567890."
-			android:layout_marginRight="24dp"
 			android:gravity="center"
 			android:inputType="numberDecimal"
 			android:textSize="16sp"/>
@@ -187,33 +189,34 @@
 		android:id="@+id/linearlayout2"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal"
 		android:layout_marginLeft="15dp"
+		android:orientation="horizontal"
 		app:layout_constraintLeft_toLeftOf="@+id/textView5"
 		app:layout_constraintTop_toBottomOf="@+id/linearlayout1">
 
 		<TextView
 			android:id="@+id/textView14"
 			android:layout_width="60dp"
-			android:gravity="right"
 			android:layout_height="wrap_content"
+			android:gravity="right"
 			android:text="Port  "/>
 
 		<EditText
 			android:id="@+id/local_frame_port"
 			android:layout_width="match_parent"
 			android:layout_height="40dp"
-			android:digits="1234567890."
 			android:layout_marginRight="24dp"
+			android:digits="1234567890"
 			android:gravity="center"
 			android:inputType="numberDecimal"
 			android:textSize="16sp"/>
 	</LinearLayout>
+
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="horizontal"
 		android:layout_marginLeft="15dp"
+		android:orientation="horizontal"
 		app:layout_constraintLeft_toLeftOf="@+id/textView5"
 		app:layout_constraintTop_toBottomOf="@+id/linearlayout2">
 

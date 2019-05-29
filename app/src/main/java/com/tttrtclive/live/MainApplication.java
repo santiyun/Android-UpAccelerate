@@ -20,7 +20,7 @@ public class MainApplication extends Application {
         //1.设置SDK的回调接收类
         mMyTTTRtcEngineEventHandler = new MyTTTRtcEngineEventHandler(getApplicationContext());
         //2.创建SDK的实例对象
-        TTTRtcEngine mTTTEngine = TTTRtcEngine.create(getApplicationContext(), "2b881d3c159dc0e332d889832a251a3b", mMyTTTRtcEngineEventHandler);
+        TTTRtcEngine mTTTEngine = TTTRtcEngine.create(getApplicationContext(), "2b881d3c159dc0e332d889832a251a3b", false, mMyTTTRtcEngineEventHandler);
         if (mTTTEngine == null) {
             System.exit(0);
             return;

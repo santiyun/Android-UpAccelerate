@@ -52,7 +52,6 @@ public class MainActivity extends BaseActivity {
     private TelephonyManager mTelephonyManager;
     private PhoneListener mPhoneListener;
     private int mRole = CLIENT_ROLE_ANCHOR;
-    private boolean mHasLocalView = false;
     private WEChatShare mWEChatShare;
 
     public static int mCurrentAudioRoute;
@@ -100,7 +99,8 @@ public class MainActivity extends BaseActivity {
         long roomId = intent.getLongExtra("ROOM_ID", 0);
         mUserId = intent.getLongExtra("USER_ID", 0);
         mRole = intent.getIntExtra("ROLE", CLIENT_ROLE_ANCHOR);
-        ((TextView) findViewById(R.id.main_btn_title)).setText("房号：" + roomId);
+        String localChannelName = getString(R.string.ttt_prefix_channel_name) + ":" + roomId;
+        ((TextView) findViewById(R.id.main_btn_title)).setText(localChannelName);
 
         if (mRole == CLIENT_ROLE_ANCHOR) {
             ((TextView) findViewById(R.id.main_btn_host)).setText("ID：" + mUserId);
@@ -161,8 +161,6 @@ public class MainActivity extends BaseActivity {
     private void initEngine() {
         mLocalBroadcast = new MyLocalBroadcastReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addCategory("ttt.test.interface");
-        filter.addAction("ttt.test.interface.string");
         filter.addAction(MyTTTRtcEngineEventHandler.TAG);
         registerReceiver(mLocalBroadcast, filter);
         ((MainApplication) getApplicationContext()).mMyTTTRtcEngineEventHandler.setIsSaveCallBack(false);
@@ -177,11 +175,10 @@ public class MainActivity extends BaseActivity {
         });
         mExitRoomDialog.mDenyBT.setOnClickListener(v -> mExitRoomDialog.dismiss());
 
-
         mErrorExitDialog = new AlertDialog.Builder(this)
-                .setTitle("退出房间提示")//设置对话框标题
+                .setTitle(getString(R.string.ttt_error_exit_dialog_title))//设置对话框标题
                 .setCancelable(false)
-                .setPositiveButton("确定", (dialog, which) -> {//确定按钮的响应事件
+                .setPositiveButton(getString(R.string.ttt_confirm), (dialog, which) -> {//确定按钮的响应事件
                     exitRoom();
                 });
     }
@@ -196,7 +193,16 @@ public class MainActivity extends BaseActivity {
     public void exitRoom() {
         MyLog.d("exitRoom was called!... leave room");
         mTTTEngine.leaveChannel();
+        setResult(1);
         finish();
+    }
+
+    public void showErrorExitDialog(String message) {
+        if (!TextUtils.isEmpty(message)) {
+            String msg = getString(R.string.ttt_error_exit_dialog_prefix_msg) + ": " + message;
+            mErrorExitDialog.setMessage(msg);//设置显示的内容
+            mErrorExitDialog.show();
+        }
     }
 
     private class MyLocalBroadcastReceiver extends BroadcastReceiver {
@@ -212,41 +218,39 @@ public class MainActivity extends BaseActivity {
                         String message = "";
                         int errorType = mJniObjs.mErrorType;
                         if (errorType == Constants.ERROR_KICK_BY_HOST) {
-                            message = getResources().getString(R.string.error_kicked);
+                            message = getResources().getString(R.string.ttt_error_exit_kicked);
                         } else if (errorType == Constants.ERROR_KICK_BY_PUSHRTMPFAILED) {
-                            message = getResources().getString(R.string.error_rtmp);
+                            message = getResources().getString(R.string.ttt_error_exit_push_rtmp_failed);
                         } else if (errorType == Constants.ERROR_KICK_BY_SERVEROVERLOAD) {
-                            message = getResources().getString(R.string.error_server_overload);
+                            message = getResources().getString(R.string.ttt_error_exit_server_overload);
                         } else if (errorType == Constants.ERROR_KICK_BY_MASTER_EXIT) {
-                            message = getResources().getString(R.string.error_anchorexited);
+                            message = getResources().getString(R.string.ttt_error_exit_anchor_exited);
                         } else if (errorType == Constants.ERROR_KICK_BY_RELOGIN) {
-                            message = getResources().getString(R.string.error_relogin);
+                            message = getResources().getString(R.string.ttt_error_exit_relogin);
                         } else if (errorType == Constants.ERROR_KICK_BY_NEWCHAIRENTER) {
-                            message = getResources().getString(R.string.error_otherenter);
+                            message = getResources().getString(R.string.ttt_error_exit_other_anchor_enter);
                         } else if (errorType == Constants.ERROR_KICK_BY_NOAUDIODATA) {
-                            message = getResources().getString(R.string.error_noaudio);
+                            message = getResources().getString(R.string.ttt_error_exit_noaudio_upload);
                         } else if (errorType == Constants.ERROR_KICK_BY_NOVIDEODATA) {
-                            message = getResources().getString(R.string.error_novideo);
+                            message = getResources().getString(R.string.ttt_error_exit_novideo_upload);
+                        } else if (errorType == Constants.ERROR_TOKEN_EXPIRED) {
+                            message = getResources().getString(R.string.ttt_error_exit_token_expired);
                         }
 
-                        if (!TextUtils.isEmpty(message)) {
-                            mErrorExitDialog.setMessage("退出原因: " + message);//设置显示的内容
-                            mErrorExitDialog.show();
-                        }
+                        showErrorExitDialog(message);
                         break;
                     case LocalConstans.CALL_BACK_ON_CONNECTLOST:
-                        mErrorExitDialog.setMessage("退出原因: 房间网络断开");//设置显示的内容
-                        mErrorExitDialog.show();
+                        showErrorExitDialog(getString(R.string.ttt_error_network_disconnected));
                         break;
                     case LocalConstans.CALL_BACK_ON_LOCAL_AUDIO_STATE:
-                        setTextViewContent(mAudioSpeedShow, R.string.main_audioup, String.valueOf(mJniObjs.mLocalAudioStats.getSentBitrate()));
+                        setTextViewContent(mAudioSpeedShow, R.string.ttt_audio_upspeed, String.valueOf(mJniObjs.mLocalAudioStats.getSentBitrate()));
                         break;
                     case LocalConstans.CALL_BACK_ON_LOCAL_VIDEO_STATE:
-                        setTextViewContent(mVideoSpeedShow, R.string.main_videoups, String.valueOf(mJniObjs.mLocalVideoStats.getSentBitrate()));
+                        setTextViewContent(mVideoSpeedShow, R.string.ttt_video_upspeed, String.valueOf(mJniObjs.mLocalVideoStats.getSentBitrate()));
                         break;
                     case LocalConstans.CALL_BACK_ON_AUDIO_ROUTE:
                         int mAudioRoute = mJniObjs.mAudioRoute;
-                        if (mAudioRoute == Constants.AUDIO_ROUTE_SPEAKER || mAudioRoute ==  Constants.AUDIO_ROUTE_HEADPHONE) {
+                        if (mAudioRoute == Constants.AUDIO_ROUTE_SPEAKER || mAudioRoute == Constants.AUDIO_ROUTE_HEADPHONE) {
                             mIsHeadset = false;
                             mAudioChannel.setImageResource(mIsMute ? R.drawable.mainly_btn_mute_speaker_selector : R.drawable.mainly_btn_speaker_selector);
                         } else {

@@ -8,10 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.tttrtclive.live.R;
 import com.tttrtclive.live.bean.VideoProfileManager;
 import com.tttrtclive.live.ui.SetActivity;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import so.library.SoSpinner;
 
@@ -102,19 +106,77 @@ public class LocalFragment extends Fragment implements SoSpinner.OnItemSelectedL
         }
     }
 
-    public void getParams() {
+    public boolean getParams() {
+        if (mPixView.getText() == null || TextUtils.isEmpty(mPixView.getText().toString())) {
+            Toast.makeText(getContext(), "自定义视频分辨率不能为空", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         String[] wh = mPixView.getText().toString().trim().split("x");
-        mSetActivity.mLocalWidth = Integer.parseInt(wh[0]);
-        mSetActivity.mLocalHeight = Integer.parseInt(wh[1]);
+        if (wh.length != 2) {
+            Toast.makeText(getContext(), "自定义视频分辨率格式错误", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        try {
+            mSetActivity.mLocalWidth = Integer.parseInt(wh[0]);
+            if (mSetActivity.mLocalWidth <= 0) {
+                Toast.makeText(getContext(), "自定义视频分辨率宽必须大于0", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "自定义视频分辨率格式错误", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        try {
+            mSetActivity.mLocalHeight = Integer.parseInt(wh[1]);
+            if (mSetActivity.mLocalHeight <= 0) {
+                Toast.makeText(getContext(), "自定义视频分辨率高必须大于0", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "自定义视频分辨率格式错误", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (mBiteView.getText() == null || TextUtils.isEmpty(mBiteView.getText().toString())) {
+            Toast.makeText(getContext(), "自定义视频码率不能为空", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         mSetActivity.mLocalBitRate = Integer.parseInt(mBiteView.getText().toString().trim());
+        if (mSetActivity.mLocalBitRate <= 0) {
+            Toast.makeText(getContext(), "自定义视频码率必须大于0", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (mFrameView.getText() == null || TextUtils.isEmpty(mFrameView.getText().toString())) {
+            Toast.makeText(getContext(), "自定义视频帧率不能为空", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         mSetActivity.mLocalFrameRate = Integer.parseInt(mFrameView.getText().toString().trim());
-        mSetActivity.mLocalIP = mFrameIP.getText().toString().trim();
+        if (mSetActivity.mLocalFrameRate <= 0) {
+            Toast.makeText(getContext(), "自定义视频帧率必须大于0", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (mFrameIP.getText() != null && !TextUtils.isEmpty(mFrameIP.getText().toString())) {
+            String str = mFrameIP.getText().toString();
+            String pattern = "(2(5[0-5]{1}|[0-4]\\d{1})|[0-1]?\\d{1,2})(\\.(2(5[0-5]{1}|[0-4]\\d{1})|[0-1]?\\d{1,2})){3}";
+            Pattern r = Pattern.compile(pattern);
+            Matcher m = r.matcher(str);
+            if (!m.find()) {
+                Toast.makeText(getContext(), "IP设置的格式有问题", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            mSetActivity.mLocalIP = mFrameIP.getText().toString().trim();
+        }
+
         mSetActivity.mLocalPushUrl = mFramePushUrl.getText().toString().trim();
         if (!TextUtils.isEmpty(mFramePort.getText())) {
             mSetActivity.mLocalPort = Integer.parseInt(mFramePort.getText().toString().trim());
         } else {
             mSetActivity.mLocalPort = 0;
         }
+        return true;
     }
 
 }

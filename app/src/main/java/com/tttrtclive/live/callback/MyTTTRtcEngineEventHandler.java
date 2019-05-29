@@ -6,12 +6,10 @@ import android.content.Intent;
 import com.tttrtclive.live.bean.JniObjs;
 import com.tttrtclive.live.ui.MainActivity;
 import com.tttrtclive.live.utils.MyLog;
-import com.wushuangtech.bean.ChatInfo;
-import com.wushuangtech.bean.LocalAudioStats;
-import com.wushuangtech.bean.LocalVideoStats;
-import com.wushuangtech.bean.RemoteAudioStats;
-import com.wushuangtech.bean.RemoteVideoStats;
-import com.wushuangtech.bean.RtcStats;
+import com.wushuangtech.expansion.bean.LocalAudioStats;
+import com.wushuangtech.expansion.bean.LocalVideoStats;
+import com.wushuangtech.expansion.bean.RemoteAudioStats;
+import com.wushuangtech.expansion.bean.RemoteVideoStats;
 import com.wushuangtech.wstechapi.TTTRtcEngineEventHandler;
 
 import java.util.ArrayList;
@@ -28,13 +26,9 @@ import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_MUTE_AUDIO;
 import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_REMOTE_AUDIO_STATE;
 import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_REMOTE_VIDEO_STATE;
 import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_REMOVE_FIRST_FRAME_COME;
-import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_SCREEN_RECORD_TIME;
-import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_SEI;
-import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_SPEAK_MUTE_AUDIO;
 import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_USER_JOIN;
 import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_USER_MUTE_VIDEO;
 import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_USER_OFFLINE;
-import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_USER_ROLE_CHANGED;
 
 
 /**
@@ -44,7 +38,7 @@ import static com.tttrtclive.live.LocalConstans.CALL_BACK_ON_USER_ROLE_CHANGED;
 public class MyTTTRtcEngineEventHandler extends TTTRtcEngineEventHandler {
 
     public static final String TAG = "MyTTTRtcEngineEventHandlerMMUPAAC";
-    public static final String MSG_TAG = "MyTTTRtcEngineEventHandlerMSGMM";
+    public static final String MSG_TAG = "MyTTTRtcEngineEventHandlerMSGMMUPAAC";
     private boolean mIsSaveCallBack;
     private List<JniObjs> mSaveCallBack;
     private Context mContext;
@@ -200,37 +194,10 @@ public class MyTTTRtcEngineEventHandler extends TTTRtcEngineEventHandler {
     }
 
     @Override
-    public void onSetSEI(String sei) {
-        MyLog.i("wzg", "onSei.... sei : " + sei);
-        JniObjs mJniObjs = new JniObjs();
-        mJniObjs.mJniType = CALL_BACK_ON_SEI;
-        mJniObjs.mSEI = sei;
-        if (mIsSaveCallBack) {
-            saveCallBack(mJniObjs);
-        } else {
-            sendMessage(mJniObjs);
-        }
-    }
-
-    @Override
     public void onUserMuteAudio(long uid, boolean muted) {
         MyLog.i("wzg", "OnRemoteAudioMuted.... uid : " + uid + " | muted : " + muted + " | mIsSaveCallBack : " + mIsSaveCallBack);
         JniObjs mJniObjs = new JniObjs();
         mJniObjs.mJniType = CALL_BACK_ON_MUTE_AUDIO;
-        mJniObjs.mUid = uid;
-        mJniObjs.mIsDisableAudio = muted;
-        if (mIsSaveCallBack) {
-            saveCallBack(mJniObjs);
-        } else {
-            sendMessage(mJniObjs);
-        }
-    }
-
-    @Override
-    public void onSpeakingMuted(long uid, boolean muted) {
-        MyLog.i("wzg", "onSpeakingMuted.... uid : " + uid + " | muted : " + muted + " | mIsSaveCallBack : " + mIsSaveCallBack);
-        JniObjs mJniObjs = new JniObjs();
-        mJniObjs.mJniType = CALL_BACK_ON_SPEAK_MUTE_AUDIO;
         mJniObjs.mUid = uid;
         mJniObjs.mIsDisableAudio = muted;
         if (mIsSaveCallBack) {
@@ -259,78 +226,6 @@ public class MyTTTRtcEngineEventHandler extends TTTRtcEngineEventHandler {
         JniObjs mJniObjs = new JniObjs();
         mJniObjs.mJniType = CALL_BACK_ON_AUDIO_ROUTE;
         mJniObjs.mAudioRoute = routing;
-        if (mIsSaveCallBack) {
-            saveCallBack(mJniObjs);
-        } else {
-            sendMessage(mJniObjs);
-        }
-    }
-
-    @Override
-    public void onLeaveChannel(RtcStats stats) {
-        MyLog.i("wzg", "onLeaveChannel....");
-    }
-
-    @Override
-    public void onFirstRemoteVideoDecoded(long uid, int width, int height) {
-//        MyLog.i("wzg", "onFirstRemoteVideoDecoded.... uid ： " + uid + " | width : " + width + " | height : " + height);
-    }
-
-    @Override
-    public void onFirstLocalVideoFrame(int width, int height) {
-        MyLog.i("wzg", "onFirstLocalVideoFrame.... width : " + width + " | height : " + height);
-    }
-
-    @Override
-    public void OnChatMessageSent(ChatInfo chatInfo, int error) {
-        MyLog.i("wzg", "OnChatMessageSent: ");
-    }
-
-    @Override
-    public void OnSignalSent(String sSeqID, int error) {
-        MyLog.i("wzg", "OnSignalSent: ");
-    }
-
-    @Override
-    public void OnChatMessageRecived(long nSrcUserID, ChatInfo chatInfo) {
-        MyLog.i("wzg", "OnChatMessageRecived: ");
-    }
-
-    @Override
-    public void onUserRoleChanged(long userID, int userRole) {
-        MyLog.i("wzg", "onUserRoleChanged... userID : " + userID + " userRole : " + userRole);
-        JniObjs mJniObjs = new JniObjs();
-        mJniObjs.mJniType = CALL_BACK_ON_USER_ROLE_CHANGED;
-        mJniObjs.mUid = userID;
-        mJniObjs.mIdentity = userRole;
-        if (mIsSaveCallBack) {
-            saveCallBack(mJniObjs);
-        } else {
-            sendMessage(mJniObjs);
-        }
-    }
-
-    @Override
-    public void OnSignalRecived(long nSrcUserID, String sSeqID, String strData) {
-        MyLog.i("wzg", "OnSignalRecived: ");
-    }
-
-    @Override
-    public void onPlayChatAudioCompletion(String filePath) {
-        MyLog.d("wzg", "onPlayChatAudioCompletion: ");
-    }
-
-    @Override
-    public void onRtcStats(RtcStats stats) {
-//        MyLog.i("wzg", "onRtcStats....  " + stats.toString());
-    }
-
-    @Override
-    public void onScreenRecordTime(int s) {
-        MyLog.i("wzg", "onScreenRecordTime: " + s);
-        JniObjs mJniObjs = new JniObjs();
-        mJniObjs.mJniType = CALL_BACK_ON_SCREEN_RECORD_TIME;
-        mJniObjs.mScreenRecordTime = s;
         if (mIsSaveCallBack) {
             saveCallBack(mJniObjs);
         } else {

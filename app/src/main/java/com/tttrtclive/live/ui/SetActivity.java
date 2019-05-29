@@ -137,8 +137,14 @@ public class SetActivity extends BaseActivity {
     }
 
     public void onOkButtonClick(View v) {
-        LocalFragment.getInstance().getParams();
-        PushFragment.getInstance().getParams();
+        boolean params = LocalFragment.getInstance().getParams();
+        if (!params) {
+            return ;
+        }
+        boolean params2 = PushFragment.getInstance().getParams();
+        if (!params2) {
+            return ;
+        }
         exit();
     }
 
