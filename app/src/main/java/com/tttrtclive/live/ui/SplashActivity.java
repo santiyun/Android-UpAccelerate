@@ -14,11 +14,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tttrtclive.live.LocalConfig;
 import com.tttrtclive.live.LocalConstans;
 import com.tttrtclive.live.R;
 import com.tttrtclive.live.bean.JniObjs;
 import com.tttrtclive.live.callback.MyTTTRtcEngineEventHandler;
-import com.tttrtclive.live.fragment.LocalFragment;
 import com.tttrtclive.live.utils.MyLog;
 import com.tttrtclive.live.utils.SharedPreferencesUtil;
 import com.wushuangtech.library.Constants;
@@ -63,6 +63,16 @@ public class SplashActivity extends BaseActivity {
         init();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            unregisterReceiver(mLocalBroadcast);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void init() {
         if (mTTTEngine == null) {
             mTTTEngine = TTTRtcEngine.getInstance();
@@ -72,8 +82,13 @@ public class SplashActivity extends BaseActivity {
         // 读取保存的数据
         String roomID = (String) SharedPreferencesUtil.getParam(this, "RoomID", "");
         mRoomIDET.setText(roomID);
+        mRoomIDET.setSelection(mRoomIDET.length());
         // 注册回调函数接收的广播
         mLocalBroadcast = new MyLocalBroadcastReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(MyTTTRtcEngineEventHandler.TAG);
+        registerReceiver(mLocalBroadcast, filter);
+
         mDialog = new ProgressDialog(this);
         mDialog.setCancelable(false);
         mDialog.setMessage(getString(R.string.ttt_hint_loading_channel));
@@ -87,24 +102,6 @@ public class SplashActivity extends BaseActivity {
         String version = TTTRtcEngine.getInstance().getSdkVersion();
         String result = String.format(string, version);
         mVersion.setText(result);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(MyTTTRtcEngineEventHandler.TAG);
-        registerReceiver(mLocalBroadcast, filter);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        try {
-            unregisterReceiver(mLocalBroadcast);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void onClickEnterButton(View v) {
@@ -123,8 +120,8 @@ public class SplashActivity extends BaseActivity {
         // 保存配置
         SharedPreferencesUtil.setParam(this, "RoomID", mRoomName);
         // 设置推流格式H264/H265的推流地址
-        if (TextUtils.isEmpty(mLocalPushUrl)) {
-            mLocalPushUrl = LocalFragment.getInstance().mPushUrlPrefix + mRoomName;
+        if (!LocalConfig.mIsCusPushUrl) {
+            mLocalPushUrl = "rtmp://push.3ttech.cn/sdk/" + mRoomName;
         }
 
         if (TextUtils.isEmpty(mLocalIP)) {
@@ -162,7 +159,11 @@ public class SplashActivity extends BaseActivity {
         }
         // 设置推流地址
         PublisherConfiguration mPublisherConfiguration = new PublisherConfiguration();
-        mPublisherConfiguration.setPushUrl(mLocalPushUrl);
+        if (LocalConfig.mIsCusPushUrl) {
+            mPublisherConfiguration.setPushUrl(mLocalPushUrl);
+        } else {
+            mPublisherConfiguration.setPushUrl("rtmp://push.3ttech.cn/sdk/" + mRoomName);
+        }
         mTTTEngine.configPublisher(mPublisherConfiguration);
         // 设置服务器地址
         if (!TextUtils.isEmpty(mLocalIP)) {
@@ -179,6 +180,7 @@ public class SplashActivity extends BaseActivity {
 
     public void onSetButtonClick(View v) {
         mRoomName = mRoomIDET.getText().toString().trim();
+        LocalConfig.mRoomID = mRoomName;
         Intent intent = new Intent(this, SetActivity.class);
         intent.putExtra("LVP", mLocalVideoProfile);
         intent.putExtra("PVP", mPushVideoProfile);
@@ -196,7 +198,6 @@ public class SplashActivity extends BaseActivity {
         intent.putExtra("EDT", mEncodeType);
         intent.putExtra("ASR", mAudioSRate);
         intent.putExtra("CHN", mChannels);
-        intent.putExtra("ROOMID", mRoomName);
         startActivityForResult(intent, ACTIVITY_SETTING);
     }
 

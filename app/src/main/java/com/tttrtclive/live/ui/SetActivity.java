@@ -33,7 +33,6 @@ public class SetActivity extends BaseActivity {
     public int mEncodeType = 0;//0:H.264  1:H.265
     public int mAudioSRate = 0;// 0:48000 1:44100
     public int mChannels = 1;
-    public String mRoomID;
     /*-------------------------------配置参数---------------------------------*/
 
     @Override
@@ -58,7 +57,6 @@ public class SetActivity extends BaseActivity {
         mEncodeType = intent.getIntExtra("EDT", mEncodeType);
         mAudioSRate = intent.getIntExtra("ASR", mAudioSRate);
         mChannels = intent.getIntExtra("CHN", mChannels);
-        mRoomID = intent.getStringExtra("ROOMID");
 
         mFragments.add(LocalFragment.getInstance());
         mFragments.add(PushFragment.getInstance());

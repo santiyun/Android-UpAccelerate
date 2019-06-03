@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.tttrtclive.live.LocalConfig;
 import com.tttrtclive.live.R;
 import com.tttrtclive.live.bean.VideoProfileManager;
 import com.tttrtclive.live.ui.SetActivity;
@@ -73,14 +74,14 @@ public class LocalFragment extends Fragment implements SoSpinner.OnItemSelectedL
             mFramePort.setText(String.valueOf(25000));
         }
 
-        if (TextUtils.isEmpty(mSetActivity.mLocalPushUrl)) {
-            if (TextUtils.isEmpty(mSetActivity.mRoomID)) {
+        if (LocalConfig.mIsCusPushUrl) {
+            mFramePushUrl.setText(mSetActivity.mLocalPushUrl);
+        } else {
+            if (TextUtils.isEmpty(LocalConfig.mRoomID)) {
                 mFramePushUrl.setText(mPushUrlPrefix);
             } else {
-                mFramePushUrl.setText(mPushUrlPrefix + mSetActivity.mRoomID);
+                mFramePushUrl.setText(mPushUrlPrefix + LocalConfig.mRoomID);
             }
-        } else {
-            mFramePushUrl.setText(mSetActivity.mLocalPushUrl);
         }
         return v;
     }
@@ -170,7 +171,15 @@ public class LocalFragment extends Fragment implements SoSpinner.OnItemSelectedL
             mSetActivity.mLocalIP = mFrameIP.getText().toString().trim();
         }
 
-        mSetActivity.mLocalPushUrl = mFramePushUrl.getText().toString().trim();
+        String defPushUrl = mPushUrlPrefix + LocalConfig.mRoomID;
+        String pushUrl = mFramePushUrl.getText().toString().trim();
+        if (defPushUrl.equals(pushUrl)) {
+            LocalConfig.mIsCusPushUrl = false;
+        } else {
+            LocalConfig.mIsCusPushUrl = true;
+        }
+        mSetActivity.mLocalPushUrl = pushUrl;
+
         if (!TextUtils.isEmpty(mFramePort.getText())) {
             mSetActivity.mLocalPort = Integer.parseInt(mFramePort.getText().toString().trim());
         } else {
