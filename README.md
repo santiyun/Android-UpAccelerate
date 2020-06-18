@@ -27,7 +27,7 @@
 
 接口列表：
 
-> 1. 设置直播模式 [setChannelProfile](http://doc3.3ttech.cn/live/client-api/android/methods.html#setChannelProfile)
+1. 设置直播模式 [setChannelProfile](http://doc3.3ttech.cn/live/client-api/android/methods.html#setChannelProfile)
 2. 设置用户角色为主播 [setClientRole](http://doc3.3ttech.cn/live/client-api/android/methods.html#setClientRole)
 3. cdn推流参数设置 [configPublisher](http://doc3.3ttech.cn/live/client-api/android/methods.html#configPublisher)
 4. 设置编码参数 [setVideoProfile](http://doc3.3ttech.cn/live/client-api/android/methods.html#setVideoProfile)
@@ -40,7 +40,7 @@
 
 回调列表：
 
-> 1. 加入房间Error [onError](http://doc3.3ttech.cn/live/client-api/android/callbacks.html#onError)
+1. 加入房间Error [onError](http://doc3.3ttech.cn/live/client-api/android/callbacks.html#onError)
 2. 加入房间成功 [onJoinChannelSuccess](http://doc3.3ttech.cn/live/client-api/android/callbacks.html#onJoinChannelSuccess)
 3. 推流成功或失败回调 [onRtcPushStatus](http://doc3.3ttech.cn/live/client-api/android/callbacks.html#onRtcPushStatus)
 4. 异常踢人 [onUserKicked](http://doc3.3ttech.cn/live/client-api/android/callbacks.html#onUserKicked)
