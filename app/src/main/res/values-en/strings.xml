@@ -1,5 +1,5 @@
 <resources>
-	<string name="app_name">Multi-MIC Connected Live Broad</string>
+	<string name="app_name">上行加速</string>
 	<string name="version_info">http://www.3ttech.cn version %1$s</string>
 	<string name="exit_window_title">"Exit the room? "</string>
 	<string name="exit_window_yes">Determine</string>
